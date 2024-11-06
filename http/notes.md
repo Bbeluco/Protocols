@@ -44,8 +44,20 @@ content-type: text/html
 The response contains the following elements:
 HTTP version, status, status message, headers and optional body
 
+# Sockets
+An important concept we need to know is **socket**. Socket is essentially an agreemnt on how to communicate with another computer over a network. Using a real-world example, socket is like have a door in a house (house in this context means the process running), your door is your way to the external world, similar to how a socket connects to the network.
+
 -----------
 
 # Coding
 (04/11/2024)
-to write our code in C we'll need some knowledge of sockets. Since we don't have this knoledge yet we'll start by learning how to implement basic socket communication in C and later we can develop a more robust version.
+To write our code in C we'll need some knowledge of sockets. Since we don't have this knoledge yet we'll start by learning how to implement basic socket communication in C and later we can develop a more robust version.
+
+(05/11/2024)
+As we saw in this [link](https://dev.to/jeffreythecoder/how-i-built-a-simple-http-server-from-scratch-using-c-739) we have a way to implement this custom HTTP based on socket approach, tha main steps are as follows:
+
+1. Create a simple socket
+2. Improve that socket to handle multiple connections, simulating a real-world scenario
+3. Add a "filter" to accept only GET requests
+
+The code in socket_base/server.c was created to provide response headers. When accessed via a browser it's considered a valid response, allowing it to be processed as a normal API response. The client.c code no longer work because it doesn't sent a valid METHOD + PATH + HTTP Version. The easiest way to test server code is by creating a NetCat communication and sending the expected request format.

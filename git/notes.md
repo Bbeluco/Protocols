@@ -28,3 +28,5 @@ Trees are basically a directory list, it could contain another tree or a bunch o
 
 ### Commit
 A commit is a snapshot of the tree in that especific time. It also contains some information like: author, message, initial commit, time, etc.
+
+If you follow every step outlined in [Git internals](https://git-scm.com/book/en/v2/Git-Internals-Git-Objects), you'll end up with a tree that contains only SHA-1 information. This is not ideal because humans have some difficulty remembering sequences like (fdf4fc3344e67ab068f836878b6c4951e3b15f3d), and another major issue is that thres's no information about who created the tree or when it was created. To solve these problems "commits" were invented. 

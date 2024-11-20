@@ -50,3 +50,20 @@ To store files without naming conflicts, git hashes the file content (while also
 3. Calculate SHA1 of the previous step
 4. Compress (using Zlib) everything from step 2
 5. Save the content of step 4 in a file inside .git/objects/STEP_3_SHA1
+
+# Ls-tree
+When we create hash-files we need to save them inside a "folder", as we mentioned earlier, this folder is called a "tree". To read the content of this tree we use the _ls-tree_ command.
+
+There are 4 possible outputs within a tree:
+
+- Executable files (100755)
+- Folders (040000)
+- Regular files (100644)
+- Symbolic links (120000)
+
+Each code in these lines represents the type of file, similar to UNIX systems.
+
+### Compile project
+To compile all the code in ".src/" folder use this comand:
+
+> gcc src/*.c -o custom_git -lz -lcrypto

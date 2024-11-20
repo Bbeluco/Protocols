@@ -77,7 +77,7 @@ char* read_file(char* file_path, long *fileSize) {
 }
 
 static int create_folder(const char* file_path) {
-    const int TOTAL_LENGTH_OBJECT_FOLDER = 15
+    const int TOTAL_LENGTH_OBJECT_FOLDER = 15;
     char aux[TOTAL_LENGTH_OBJECT_FOLDER + NULL_OPERATOR_LENGTH];
     const int START = 0;
     strncpy(aux, file_path + START, TOTAL_LENGTH_OBJECT_FOLDER - START);

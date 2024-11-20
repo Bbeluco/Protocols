@@ -4,8 +4,10 @@
 #include <sys/stat.h>
 #include <errno.h>
 #include <assert.h>
+#include <stdbool.h>
 #include "cat_file.h"
 #include "hash_file.h"
+#include "ls_tree.h"
 
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 
@@ -44,7 +46,11 @@ int main(int argc, char *argv[]) {
         cat_file(argv[3]);
     } else if((strcmp(command, "hash-object")) == 0 && (strcmp(argv[2], "-w") == 0) && (strlen(argv[3]) > 0)) {
         hash_file(argv[3]);
-    } else {
+    } else if ((strcmp(command, "ls-tree") == 0 && (argc <= 4))) {
+        int name_only = strcmp(argv[2], "--name-only");
+        char *sha1 = ((name_only != 0) ? argv[2] : argv[3]);
+        ls_tree(sha1, name_only);
+    }else {
         fprintf(stderr, "Unknown command %s\n", command);
         return 1;
     }

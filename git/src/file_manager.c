@@ -3,6 +3,7 @@
 #include <string.h>
 #include <errno.h>
 #include <sys/stat.h>
+#include <dirent.h>
 
 #define NULL_OPERATOR_LENGTH 1
 
@@ -98,4 +99,20 @@ int write_file(const char* file_path, const char* content, long compressedSize) 
     fclose(fptr);
 
     return 0;
+}
+
+char* list_all_files(const char* folder) {
+    struct dirent *de;
+    DIR *dr = opendir(folder);
+
+    if(dr == NULL) {
+        printf("Could not open specificate folder: %s", folder);
+        return NULL;
+    }
+    while((de = readdir(dr)) != NULL) {
+        printf("%s\n", de->d_name);
+    }
+
+    closedir(dr);
+    return "A";
 }

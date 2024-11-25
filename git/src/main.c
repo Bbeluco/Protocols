@@ -8,6 +8,7 @@
 #include "cat_file.h"
 #include "hash_file.h"
 #include "ls_tree.h"
+#include "write_tree.h"
 
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 
@@ -45,11 +46,15 @@ int main(int argc, char *argv[]) {
     } else if((strcmp(command, "cat-file")) == 0 && (strcmp(argv[2], "-p") == 0) && (strlen(argv[3]) > 0)) {
         cat_file(argv[3]);
     } else if((strcmp(command, "hash-object")) == 0 && (strcmp(argv[2], "-w") == 0) && (strlen(argv[3]) > 0)) {
-        hash_file(argv[3]);
+        char *sha1 = hash_file(argv[3]);
+        free(sha1);
     } else if ((strcmp(command, "ls-tree") == 0 && (argc <= 4))) {
         int name_only = strcmp(argv[2], "--name-only");
         char *sha1 = ((name_only != 0) ? argv[2] : argv[3]);
         ls_tree(sha1, name_only);
+    }else if(strcmp(command, "write-tree") == 0) {
+        const char* INITIAL_FOLDER = ".";
+        write_tree(INITIAL_FOLDER);
     }else {
         fprintf(stderr, "Unknown command %s\n", command);
         return 1;

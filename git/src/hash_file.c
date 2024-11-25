@@ -74,7 +74,7 @@ static char* calculate_sha1(char* buffer, int total_file_content_length) {
     return sha1_char_type;
 }
 
-void* hash_file(char* file_path) {
+char* hash_file(char* file_path) {
     long fileSize;
     char *fileContent = read_file(file_path, &fileSize);
     char fileLengthInString[1024];
@@ -104,6 +104,8 @@ void* hash_file(char* file_path) {
             printf("%s", sha1);
         }
     }
-    free(sha1);
+    printf("\n");
     free(git_object_file_path);
+    
+    return sha1;
 }

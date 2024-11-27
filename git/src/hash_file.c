@@ -55,7 +55,7 @@ static int calculate_all_nulls_required() {
     return null_operator_filelength + null_operator_header + null_operator_end_of_string;
 }
 
-static char* calculate_sha1(char* buffer, int total_file_content_length) {
+char* calculate_sha1(char* buffer, int total_file_content_length) {
     SHA_CTX sha;
     uint8_t sha1_results_encoded[SHA_DIGEST_LENGTH];
     const int HEX_DECIMAL_QUANTITY = 2;
@@ -69,7 +69,7 @@ static char* calculate_sha1(char* buffer, int total_file_content_length) {
     for(int n = 1; n < SHA_DIGEST_LENGTH; n++) {
         char aux[3];
         sprintf(aux, "%02x", sha1_results_encoded[n]);
-        strcat(sha1_char_type, aux); 
+        strcat(sha1_char_type, aux);
     }
     return sha1_char_type;
 }
@@ -100,12 +100,11 @@ char* hash_file(char* file_path) {
     char *compressedContent = compressData(buffer, total_file_content_length, &compressedSize);
     if(compressedContent != NULL) {
         int r = write_file(git_object_file_path, compressedContent, compressedSize);
-        if(r == 0) {
-            printf("%s", sha1);
+        free(git_object_file_path);
+        if(r != 0) {
+            return NULL;
         }
     }
-    printf("\n");
-    free(git_object_file_path);
     
     return sha1;
 }

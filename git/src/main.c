@@ -47,6 +47,10 @@ int main(int argc, char *argv[]) {
         cat_file(argv[3]);
     } else if((strcmp(command, "hash-object")) == 0 && (strcmp(argv[2], "-w") == 0) && (strlen(argv[3]) > 0)) {
         char *sha1 = hash_file(argv[3]);
+        if(sha1 != NULL) {
+            printf("%s", sha1);
+            printf("\n");
+        }
         free(sha1);
     } else if ((strcmp(command, "ls-tree") == 0 && (argc <= 4))) {
         int name_only = strcmp(argv[2], "--name-only");

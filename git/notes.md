@@ -63,6 +63,9 @@ There are 4 possible outputs within a tree:
 
 Each code in these lines represents the type of file, similar to UNIX systems.
 
+# Write-tree
+In real git **write-tree** works over a staging area, as in "BuildingYourOwnX" they skip this part I'll skip it as well. The main goal of _write-tree_ is create a sequence of folders and files that belongs to a tree, this three is equivalent to a "folder" that we know in OS (similar to the explanation at the beginning). For your code we'll assume that everything inside _./custom_git_ excution folder represents the staging area
+
 ### Compile project
 To compile all the code in ".src/" folder use this comand:
 

@@ -6,7 +6,7 @@
 
 #define NULL_OPERATOR_LENGTH 1
 
-void* ls_tree(char* sha1, int name_only) { // name_only = 0 sinal que encontrou
+void* ls_tree(char* sha1, int name_only) {
     long uncompressSize;
     long compressedSize;
 

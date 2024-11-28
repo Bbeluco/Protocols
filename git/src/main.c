@@ -58,7 +58,9 @@ int main(int argc, char *argv[]) {
         ls_tree(sha1, name_only);
     }else if(strcmp(command, "write-tree") == 0) {
         const char* INITIAL_FOLDER = ".";
-        write_tree(INITIAL_FOLDER);
+        char *tree = write_tree(INITIAL_FOLDER);
+        printf("%s\n", tree);
+        free(tree);
     }else {
         fprintf(stderr, "Unknown command %s\n", command);
         return 1;

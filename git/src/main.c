@@ -58,7 +58,8 @@ int main(int argc, char *argv[]) {
         ls_tree(sha1, name_only);
     }else if(strcmp(command, "write-tree") == 0) {
         const char* INITIAL_FOLDER = ".";
-        char *tree = write_tree(INITIAL_FOLDER);
+        const int INCLUDE_TREE_HEADER = 1;
+        char *tree = write_tree(INITIAL_FOLDER, INCLUDE_TREE_HEADER);
         printf("%s\n", tree);
         free(tree);
     }else {

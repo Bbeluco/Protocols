@@ -31,7 +31,7 @@ static char* calculate_tree_entry_file(char *file_path) {
     return sha1_current_file;
 }
 
-char* write_tree(const char* folder) {
+char* write_tree(const char* folder, int should_include_tree_header) {
     struct dirent *de;
     DIR *dr = opendir(folder);
 
@@ -54,7 +54,7 @@ char* write_tree(const char* folder) {
         char *new_data;
         int prev_entry_length = entry_length;
         if(de->d_type == DT_DIR && (strcmp(de->d_name, ".") != 0 && strcmp(de->d_name, "./.") != 0)) {
-            char* sha1 = write_tree(file_or_folder_path);
+            char* sha1 = write_tree(file_or_folder_path, 0);
             if(sha1 == NULL) {
                 return NULL;
             }
@@ -97,9 +97,25 @@ char* write_tree(const char* folder) {
     for(int i = 0; i < entry_length; i++) {
         printf("%c", tree_content[i]);
     }
-
+    printf("\n\n\n\n");
     //Antes de executar o hash precisamos dizer qual o tamanho desse carinha e colocar o "tree" na frente
     //Seria de otimo tom refatorar esse codigo tambem, ta meio sinistro a situacao aqui
+    if(should_include_tree_header == 1) {
+        char* aux = malloc(20);
+        char* result = malloc(2048);
+        sprintf(aux, "tree %i", entry_length);
+        
+        sprintf(result, "%s%c%s", aux, '\0', tree_content);
+        int str_len_aux = strlen(aux);
+        for(int i = 0; i < entry_length+20; i++) {
+            result[i+str_len_aux] = tree_content[i];
+        }
+        tree_content = result;
+    }
+    for(int i = 0; i < entry_length; i++) {
+        printf("%c", tree_content[i]);
+    }
+    printf("\n\n\n\n");
     char *tree_sha1 = calculate_sha1(tree_content, entry_length); 
     free(tree_content);
     if(tree_sha1 == NULL) {

@@ -9,6 +9,7 @@
 #include "hash_file.h"
 #include "ls_tree.h"
 #include "write_tree.h"
+#include "commit_tree.h"
 
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 
@@ -62,6 +63,10 @@ int main(int argc, char *argv[]) {
         char *tree = write_tree(INITIAL_FOLDER, INCLUDE_TREE_HEADER);
         printf("%s\n", tree);
         free(tree);
+    }else if((strcmp(command, "commit-tree") == 0)) {
+        char* commit = commit_tree(argv, argc);
+        printf("%s", commit);
+        free(commit);
     }else {
         fprintf(stderr, "Unknown command %s\n", command);
         return 1;

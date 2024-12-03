@@ -61,21 +61,12 @@ char* write_tree(const char* folder, int should_include_tree_header) {
 
             new_data = format_entry_data(sha1, de, &entry_length);
 
-            char* git_object_file_path = get_object_filepath(sha1);
-            if(git_object_file_path == NULL) {
+            int data_saved = save_compress_data_in_git_folder(sha1, new_data, entry_length);
+            if(data_saved < 0) {
                 free(sha1);
                 return NULL;
             }
 
-            long compressedSize;
-            char *compressedContent = compressData(new_data, entry_length, &compressedSize);
-            if(compressedContent != NULL) {
-                int r = write_file(git_object_file_path, compressedContent, compressedSize);
-                free(git_object_file_path);
-                if(r != 0) {
-                    return NULL;
-                }
-            }
             free(sha1);
         } else {
             char* sha1 = calculate_tree_entry_file(file_or_folder_path);
@@ -94,12 +85,6 @@ char* write_tree(const char* folder, int should_include_tree_header) {
         free(new_data);
     }
 
-    for(int i = 0; i < entry_length; i++) {
-        printf("%c", tree_content[i]);
-    }
-    printf("\n\n\n\n");
-    //Antes de executar o hash precisamos dizer qual o tamanho desse carinha e colocar o "tree" na frente
-    //Seria de otimo tom refatorar esse codigo tambem, ta meio sinistro a situacao aqui
     if(should_include_tree_header == 1) {
         char* aux = malloc(20);
         char* result = malloc(2048);
@@ -112,11 +97,9 @@ char* write_tree(const char* folder, int should_include_tree_header) {
         }
         tree_content = result;
     }
-    for(int i = 0; i < entry_length; i++) {
-        printf("%c", tree_content[i]);
-    }
-    printf("\n\n\n\n");
-    char *tree_sha1 = calculate_sha1(tree_content, entry_length); 
+
+    char *tree_sha1 = calculate_sha1(tree_content, entry_length);
+    //Precisamos adicionar aqui a parte de salvar o resultado do write tree dentro do repositorio do git/objects
     free(tree_content);
     if(tree_sha1 == NULL) {
         free(tree_sha1);

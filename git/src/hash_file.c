@@ -90,20 +90,10 @@ char* hash_file(char* file_path) {
     if(sha1 == NULL) {
         return NULL;
     }
-    char* git_object_file_path = get_object_filepath(sha1);
-    if(git_object_file_path == NULL) {
+    int data_saved = save_compress_data_in_git_folder(sha1, buffer, total_file_content_length);
+    if(data_saved < 0) {
         free(sha1);
         return NULL;
-    }
-
-    long compressedSize;
-    char *compressedContent = compressData(buffer, total_file_content_length, &compressedSize);
-    if(compressedContent != NULL) {
-        int r = write_file(git_object_file_path, compressedContent, compressedSize);
-        free(git_object_file_path);
-        if(r != 0) {
-            return NULL;
-        }
     }
     
     return sha1;

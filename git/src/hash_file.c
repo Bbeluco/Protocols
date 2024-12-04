@@ -73,18 +73,11 @@ char* calculate_sha1(char* buffer, int total_file_content_length) {
     }
     return sha1_char_type;
 }
-
-char* hash_file(char* file_path) {
-    long fileSize;
-    char *fileContent = read_file(file_path, &fileSize);
-    char fileLengthInString[1024];
-    fileSize -= NULL_OPERATOR_LENGTH;
-    intToStr(fileSize, fileLengthInString);
-
-    const int BLOB_LENGTH = 5;
-    int total_file_content_length = BLOB_LENGTH + fileSize + calculate_all_nulls_required();
+static char* hash_generic_type(char* content, char* file_type, long fileSize) {
+    const int SPACE_LENGTH = 1;
+    int total_file_content_length = strlen(file_type) + SPACE_LENGTH + fileSize + calculate_all_nulls_required();
     char buffer[total_file_content_length];
-    sprintf(buffer, "%s%s%c%s", "blob ", fileLengthInString, '\0', fileContent);
+    sprintf(buffer, "%s %li%c%s", file_type, fileSize, '\0', content);
     
     char* sha1 = calculate_sha1(buffer, total_file_content_length);
     if(sha1 == NULL) {
@@ -97,4 +90,19 @@ char* hash_file(char* file_path) {
     }
     
     return sha1;
+}
+
+char* hash_file(char* file_path, char* file_type) {
+    long fileSize;
+    char *fileContent = read_file(file_path, &fileSize);
+    fileSize -= NULL_OPERATOR_LENGTH;
+    if(fileContent == NULL) {
+        printf("Error while trying to read file %s", file_path);
+        return NULL;
+    }
+    return hash_generic_type(fileContent, file_type, fileSize);
+}
+
+char* hash_commit(char* content, char* file_type) {
+    return hash_generic_type(content, file_type, strlen(content));
 }

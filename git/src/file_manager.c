@@ -90,7 +90,6 @@ static int create_folder(const char* file_path) {
 int write_file(const char* file_path, const char* content, long compressedSize) {
     FILE *fptr;
     create_folder(file_path);
-    printf("%s\n", file_path);
     fptr = fopen(file_path, "wb");
     if(fptr == NULL) {
         perror("Error while creating file");
@@ -102,27 +101,10 @@ int write_file(const char* file_path, const char* content, long compressedSize) 
     return 0;
 }
 
-char* list_all_files(const char* folder) {
-    struct dirent *de;
-    DIR *dr = opendir(folder);
-
-    if(dr == NULL) {
-        printf("Could not open specificate folder: %s", folder);
-        return NULL;
-    }
-    while((de = readdir(dr)) != NULL) {
-        printf("%s\n", de->d_name);
-    }
-
-    closedir(dr);
-    return "A";
-}
-
 int do_file_exists(char *file) {
     char* path = get_object_filepath(file);
     FILE* fp = fopen(path, "r");
 
-    printf("%s", path);
     free(path);
     if (fp == NULL)  { 
         printf("Could not open current directory\n"); 

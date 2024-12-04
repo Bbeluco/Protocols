@@ -47,7 +47,7 @@ int main(int argc, char *argv[]) {
     } else if((strcmp(command, "cat-file")) == 0 && (strcmp(argv[2], "-p") == 0) && (strlen(argv[3]) > 0)) {
         cat_file(argv[3]);
     } else if((strcmp(command, "hash-object")) == 0 && (strcmp(argv[2], "-w") == 0) && (strlen(argv[3]) > 0)) {
-        char *sha1 = hash_file(argv[3]);
+        char *sha1 = hash_file(argv[3], "blob");
         if(sha1 != NULL) {
             printf("%s", sha1);
             printf("\n");
@@ -65,7 +65,7 @@ int main(int argc, char *argv[]) {
         free(tree);
     }else if((strcmp(command, "commit-tree") == 0)) {
         char* commit = commit_tree(argv, argc);
-        printf("%s", commit);
+        printf("%s\n", commit);
         free(commit);
     }else {
         fprintf(stderr, "Unknown command %s\n", command);

@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include "file_manager.h"
+#include "hash_file.h"
 
 char* commit_tree(char *argv[], int argc){
     char* sha1_tree = argv[2];
@@ -35,8 +36,7 @@ char* commit_tree(char *argv[], int argc){
     sprintf(commiter, "commiter Bruno Beluco <bbeluco@email.com> %u\n", (unsigned)time(NULL));
     strcat(result, commiter);
     free(commiter);
-
-    if(!(strcmp(argv[3], "-m") == 0) || !(strcmp(argv[5], "-m") == 0)) {
+    if(!(strcmp(argv[3], "-m") == 0) && !(strcmp(argv[5], "-m") == 0)) {
         printf("invalid comment\n");
         free(result);
         return NULL;
@@ -46,5 +46,6 @@ char* commit_tree(char *argv[], int argc){
     sprintf(comment, "\n%s\n", argv[argc - 1]);
     strcat(result, comment);
 
-    return result;
+
+    return hash_commit(result, "commit");
 }

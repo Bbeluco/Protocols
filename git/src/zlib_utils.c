@@ -51,6 +51,7 @@ int save_compress_data_in_git_folder(char* sha1, char* content, int total_file_c
     if(compressedContent != NULL) {
         int r = write_file(git_object_file_path, compressedContent, compressedSize);
         free(git_object_file_path);
+        free(compressedContent);
         if(r != 0) {
             return -1;
         }

@@ -21,7 +21,7 @@ static char* format_entry_data(char* sha1, struct dirent *de, int *total_tree_si
 }
 
 static char* calculate_tree_entry_file(char *file_path) {
-    char *sha1_current_file = hash_file(file_path);
+    char *sha1_current_file = hash_file(file_path, "blob");
     if(sha1_current_file == NULL) {
         free(sha1_current_file);
         printf("Error while tring to hash file %s", file_path);
@@ -99,6 +99,14 @@ char* write_tree(const char* folder, int should_include_tree_header) {
     }
 
     char *tree_sha1 = calculate_sha1(tree_content, entry_length);
+    if(should_include_tree_header == 1) {
+        int file = save_compress_data_in_git_folder(tree_sha1, tree_content, entry_length);
+        if(file < 0) {
+            printf("Error while saving write-tree content");
+            return NULL;
+        }
+    }
+
     //Precisamos adicionar aqui a parte de salvar o resultado do write tree dentro do repositorio do git/objects
     free(tree_content);
     if(tree_sha1 == NULL) {

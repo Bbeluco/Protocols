@@ -66,6 +66,19 @@ Each code in these lines represents the type of file, similar to UNIX systems.
 # Write-tree
 In real git **write-tree** works over a staging area, as in "BuildingYourOwnX" they skip this part I'll skip it as well. The main goal of _write-tree_ is create a sequence of folders and files that belongs to a tree, this three is equivalent to a "folder" that we know in OS (similar to the explanation at the beginning). For your code we'll assume that everything inside _./custom_git_ excution folder represents the staging area
 
+# Commit-tree
+This is the _commit_ command without all the convinience
+
+# Clone
+CodeCrafters says that this is the most challange part of the software so far. Reading the [git documentation](https://git-scm.com/docs/http-protocol) it tell us some important information
+
+## General Request Processing
+All the sides (client and server) MUST support HTTP1.0 and HTTP1.1, the main communication will occur in HTTP.
+If a file do not exists the server must return _404 Not Found_ or _410 Gone_, it is not default to return 200. The system should work as a OS, so, if the user requires a file that does not have permission to read it the server must return _403 Forbidden_
+
+## Discovering References
+The HTTP Clients must at first discover all the references available in that repo, to know this the client must reach the file present in **$GIT_URL/info/refs**. There's a difference between _dumb_ and _smart_ clients. Dumb clients has some particallarities that smart dont, for more details checkout [git documentation](https://git-scm.com/docs/http-protocol#_discovering_references)
+
 ### Compile project
 To compile all the code in ".src/" folder use this comand:
 

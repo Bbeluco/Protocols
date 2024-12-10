@@ -10,6 +10,7 @@
 #include "ls_tree.h"
 #include "write_tree.h"
 #include "commit_tree.h"
+#include "clone.h"
 
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 
@@ -67,7 +68,9 @@ int main(int argc, char *argv[]) {
         char* commit = commit_tree(argv, argc);
         printf("%s\n", commit);
         free(commit);
-    }else {
+    }else if((strcmp(command, "clone") == 0)){
+        clone("TODO");
+    } else {
         fprintf(stderr, "Unknown command %s\n", command);
         return 1;
     }

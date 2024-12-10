@@ -77,7 +77,10 @@ All the sides (client and server) MUST support HTTP1.0 and HTTP1.1, the main com
 If a file do not exists the server must return _404 Not Found_ or _410 Gone_, it is not default to return 200. The system should work as a OS, so, if the user requires a file that does not have permission to read it the server must return _403 Forbidden_
 
 ## Discovering References
-The HTTP Clients must at first discover all the references available in that repo, to know this the client must reach the file present in **$GIT_URL/info/refs**. There's a difference between _dumb_ and _smart_ clients. Dumb clients has some particallarities that smart dont, for more details checkout [git documentation](https://git-scm.com/docs/http-protocol#_discovering_references)
+The HTTP Clients must at first discover all the references available in that repo, to know this the client must reach the file present in **$GIT_URL/info/refs**. There's a difference between _dumb_ and _smart_ clients. Dumb clients has some particallarities that smart dont, for more details checkout [git documentation](https://git-scm.com/docs/http-protocol#_discovering_references). Its in Reference discovery phase that git compares client most recent _ref_ with server most recent ref, if those refs doesnt match it request (or pushes) new data
+
+# Capabilities
+In that phase, the main goal is discovery how the server and the client can communicate with each other. Here we use the same logic as when creating a "hash-file", I mean SHA1 _ref-name_\0CAPABILITIES. After discovery the server capability, client and server tries to determine the minimal packfile required
 
 ### Compile project
 To compile all the code in ".src/" folder use this comand:

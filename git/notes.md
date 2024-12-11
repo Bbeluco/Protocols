@@ -85,4 +85,4 @@ In that phase, the main goal is discovery how the server and the client can comm
 ### Compile project
 To compile all the code in ".src/" folder use this comand:
 
-> gcc src/*.c -o custom_git -lz -lcrypto
+> gcc src/*.c -o custom_git -lz -lcrypto -lcurl

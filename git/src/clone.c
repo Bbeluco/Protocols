@@ -1,79 +1,70 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
 #include <string.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <netdb.h>
+#include <curl/curl.h>
 
-void error(const char *msg) { perror(msg); exit(0); }
+struct MemoryStruct {
+    char* memory;
+    size_t size;
+};
+
+static size_t WriteMemoryCallback(void *contents, size_t size, size_t nmemb, void *userp){
+    size_t realsize = size * nmemb;
+    struct MemoryStruct *mem = (struct MemoryStruct *)userp;
+
+    char *ptr = realloc(mem->memory, mem->size + realsize + 1);
+    if(ptr == NULL) {
+        printf("Not enough memory (realloc returned NULL)\n");
+        return 0;
+    }
+
+    mem->memory = ptr;
+    memcpy(&(mem->memory[mem->size]), contents, realsize);
+    mem->size += realsize;
+    mem->memory[mem->size] = 0;
+
+    return realsize;
+}
 
 int clone(const char* url) {
-    char* host = "github.com";
-    int portno = 9418;
-    char* message = "GET /Bbeluco/QueryMysqlCpp.git/info/refs?service=git-upload-pack HTTP/1.1\r\n\r\n";
+    CURL *curl;
+    CURLcode res;
 
-    struct hostent *server;
-    struct sockaddr_in serv_addr;
-    int sockfd, bytes, sent, received, total;
-    char response[4096];
-    
-    printf("Request:\n%s\n", message);
+    struct MemoryStruct chunk;
+    chunk.memory = malloc(1);
+    chunk.size = 0;
 
-    sockfd = socket(AF_INET, SOCK_STREAM, 0);
-    if(sockfd < 0) {
-        error("Error while opening socket");
+    curl = curl_easy_init();
+    if(!curl) {
+        printf("Failed to allocate curl");
+        return -1;
     }
 
-    server = gethostbyname(host);
-    if(server == NULL) {
-        error("ERROR no such host");
+    curl_easy_setopt(curl, CURLOPT_URL, "https://github.com/Bbeluco/LearnCpp.git/info/refs?service=git-upload-pack");
+
+    curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "GET");
+
+    struct curl_slist *headers = NULL;
+    headers = curl_slist_append(headers, "Host: github.com");
+    headers = curl_slist_append(headers, "User-Agent: git/2.34.1");
+    curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
+
+    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteMemoryCallback);
+    curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&chunk);
+
+    res = curl_easy_perform(curl);
+
+    if(res != CURLE_OK) {
+        fprintf(stderr, "curl_easy_perform() failed: %s\n", curl_easy_strerror(res));
+    } else {
+        for(int i = 0; i < chunk.size; i++) {
+            printf("%c", chunk.memory[i]);
+        }
+        printf("\n");
     }
 
-    memset(&serv_addr, 0, sizeof(serv_addr));
-    serv_addr.sin_family = AF_INET;
-    serv_addr.sin_port = htons(portno);
-
-    memcpy(&serv_addr.sin_addr.s_addr,server->h_addr, server->h_length);
-
-    if(connect(sockfd, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0) {
-        error("ERROR connecting");
-    }
-
-    total = strlen(message);
-    sent = 0;
-    do {
-        bytes = write(sockfd, message+sent, total-sent);
-        if(bytes < 0) {
-            error("ERROR writing message to socket");
-        }
-        if(bytes == 0) {
-            break;
-        }
-
-        sent+=bytes;
-    }while(sent < total);
-
-    memset(response, 0, sizeof(response));
-    total = sizeof(response) - 1;
-    received = 0;
-    do {
-        bytes = read(sockfd, response+received, total-received);
-        if(bytes < 0) {
-            error("ERROR reading message to socket");
-        }
-        if(bytes == 0) {
-            break;
-        }
-    }while(received < total);
-
-    if(received == total) {
-        error("ERROR storing complete response from socket");
-    }
-
-    close(sockfd);
-
-    printf("Response:\n%s\n", response);
-
+    free(chunk.memory);
+    curl_easy_cleanup(curl);
+    curl_slist_free_all(headers);
     return 0;
 }

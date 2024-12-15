@@ -63,3 +63,51 @@ MemoryStruct getRefFiles(const char* url) {
 
     return chunk;
 }
+
+MemoryStruct getPackFileFromServer(const char* url, const char* hash) {
+    CURL *curl;
+    CURLcode res;
+
+    MemoryStruct chunk;
+    chunk.memory = malloc(1);
+    chunk.size = 0;
+    chunk.status = STATUS_FAIL;
+
+    curl = curl_easy_init();
+    if(!curl) {
+        printf("Failed to allocate curl");
+        return chunk;
+    }
+
+    curl_easy_setopt(curl, CURLOPT_URL, "https://github.com/Bbeluco/LearnCpp.git/git-upload-pack");
+
+    curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "POST");
+    curl_easy_setopt(curl, CURLOPT_ACCEPT_ENCODING, "gzip,deflate");
+
+    struct curl_slist *headers = NULL;
+    headers = curl_slist_append(headers, "Host: github.com");
+    headers = curl_slist_append(headers, "User-Agent: git/2.34.1");
+    headers = curl_slist_append(headers, "Content-Type: application/x-git-upload-pack-request");
+    curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
+
+    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteMemoryCallback);
+    curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&chunk);
+
+    char* hashToSend = malloc(100);
+    sprintf(hashToSend, "0032want %s\n00000009done\n", hash);
+    curl_easy_setopt(curl, CURLOPT_POSTFIELDS, hashToSend);
+
+    res = curl_easy_perform(curl);
+
+    if(res != CURLE_OK) {
+        fprintf(stderr, "curl_easy_perform() failed: %s\n", curl_easy_strerror(res));
+        free(chunk.memory);
+        return chunk;
+    }
+
+    curl_easy_cleanup(curl);
+    curl_slist_free_all(headers);
+    chunk.status = STATUS_SUCESS;
+
+    return chunk;
+}

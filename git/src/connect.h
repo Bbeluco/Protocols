@@ -11,5 +11,6 @@ typedef struct MemoryStruct {
 } MemoryStruct;
 
 MemoryStruct getRefFiles(const char* url);
+MemoryStruct getPackFileFromServer(const char* url, const char* hash);
 
 #endif

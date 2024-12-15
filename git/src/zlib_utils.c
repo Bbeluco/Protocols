@@ -4,6 +4,7 @@
 #include <string.h>
 #include <sys/stat.h>
 #include <errno.h>
+#include <stdint.h>
 #include "file_manager.h"
 
 unsigned char *decompressData(const unsigned char *compressedData, long compressedSize, long *decompressedSize) {
@@ -57,5 +58,48 @@ int save_compress_data_in_git_folder(char* sha1, char* content, int total_file_c
         }
     }
 
+    return 0;
+}
+
+int decompressPackObject(uint8_t *buffer, size_t size, uint8_t **decompressedData, size_t *used) {
+    z_stream stream;
+    memset(&stream, 0, sizeof(stream));
+    inflateInit(&stream);
+
+    size_t bufferSize = size * 2; // Initial output buffer size
+    *decompressedData = malloc(bufferSize);
+    if (!*decompressedData) {
+        inflateEnd(&stream);
+        return -1;
+    }
+
+    stream.next_in = buffer;
+    stream.avail_in = size;
+    stream.next_out = *decompressedData;
+    stream.avail_out = bufferSize;
+
+    int ret;
+    while ((ret = inflate(&stream, Z_NO_FLUSH)) != Z_STREAM_END) {
+        if (ret != Z_OK && ret != Z_BUF_ERROR) {
+            free(*decompressedData);
+            inflateEnd(&stream);
+            return -1;
+        }
+
+        if (stream.avail_out == 0) {
+            bufferSize *= 2;
+            *decompressedData = realloc(*decompressedData, bufferSize);
+            if (!*decompressedData) {
+                inflateEnd(&stream);
+                return -1;
+            }
+
+            stream.next_out = *decompressedData + stream.total_out;
+            stream.avail_out = bufferSize - stream.total_out;
+        }
+    }
+
+    *used = stream.total_in;
+    inflateEnd(&stream);
     return 0;
 }
